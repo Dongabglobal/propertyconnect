@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PropertyConnect — Buy, sell and rent property in Nigeria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    box-sizing:border-box;
+    --bg:#F2EFE8; --bg-panel:#EAE5DA; --bg-raised:#FFFFFF;
+    --ink:#1E2A24; --ink-soft:#57635B; --line:#C9C2B4;
+    --brick:#A3623B; --brick-wash:#EFE0D3;
+    --slate:#35506B; --slate-wash:#DEE6EC;
+    --success:#3F6B4E; --danger:#A3402F;
+    --font-display:'Fraunces', Georgia, 'Times New Roman', serif;
+    --font-body:'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#181C19; --bg-panel:#1F2521; --bg-raised:#232A25;
+      --ink:#EDEAE2; --ink-soft:#AEB6AC; --line:#3A423C;
+      --brick-wash:#3A2A22; --slate-wash:#212B33; --success:#7DB893;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#181C19; --bg-panel:#1F2521; --bg-raised:#232A25;
+    --ink:#EDEAE2; --ink-soft:#AEB6AC; --line:#3A423C;
+    --brick-wash:#3A2A22; --slate-wash:#212B33; --success:#7DB893;
+  }
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--font-body); line-height:1.5; -webkit-font-smoothing:antialiased;}
+  button{font-family:inherit; cursor:pointer;}
+  :focus-visible{outline:2px solid var(--slate); outline-offset:2px;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 20px;}
+  .hairline{border-top:1px solid var(--line);}
+
+  header.top{position:sticky; top:0; z-index:40; padding-top:env(safe-area-inset-top,0px); background:var(--bg); border-bottom:1px solid var(--line);}
+  .nav{max-width:1080px; margin:0 auto; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+  .brand{font-family:var(--font-display); font-size:22px; font-weight:600; cursor:pointer;}
+  .nav-actions{display:flex; gap:8px; align-items:center;}
+
+  .btn{border:1px solid var(--ink); background:transparent; color:var(--ink); padding:9px 16px; font-size:14px; font-weight:500; border-radius:2px; transition:background .15s,color .15s,border-color .15s; display:inline-block; text-align:center;}
+  .btn:hover{background:var(--ink); color:var(--bg);}
+  .btn-solid{background:var(--ink); color:var(--bg);}
+  .btn-solid:hover{opacity:.85;}
+  .btn-brick{background:var(--brick); border-color:var(--brick); color:#fff;}
+  .btn-brick:hover{background:#8C5231; border-color:#8C5231; color:#fff;}
+  .btn-slate{background:var(--slate); border-color:var(--slate); color:#fff;}
+  .btn-slate:hover{background:#2A4058; border-color:#2A4058; color:#fff;}
+  .btn-ghost{border-color:var(--line); color:var(--ink-soft);}
+  .btn-ghost:hover{background:var(--bg-panel); color:var(--ink); border-color:var(--line);}
+  .btn-sm{padding:6px 12px; font-size:13px;}
+  .btn[disabled]{opacity:.5; cursor:not-allowed;}
+  .btn[disabled]:hover{background:transparent; color:var(--ink);}
+  .btn-full{width:100%;}
+
+  section{padding:56px 0;}
+  .hero{display:grid; grid-template-columns:1.1fr 1fr; gap:40px; align-items:center; padding:44px 0 56px;}
+  @media (max-width:760px){ .hero{grid-template-columns:1fr; gap:28px;} }
+  .hero h1{font-family:var(--font-display); font-weight:500; font-size:clamp(32px,5.5vw,54px); line-height:1.06; margin:0 0 18px; letter-spacing:-0.5px;}
+  .hero p.lede{font-size:17px; color:var(--ink-soft); max-width:480px; margin:0 0 26px;}
+  .hero-ctas{display:flex; gap:10px; flex-wrap:wrap;}
+  .hero-panel{background:var(--bg-panel); border:1px solid var(--line); padding:22px;}
+  .hero-panel .cap{font-size:11px; letter-spacing:.5px; color:var(--ink-soft); margin-bottom:8px; font-weight:600;}
+  .hero-item{display:flex; gap:12px; padding:12px 0; border-bottom:1px dashed var(--line); align-items:center;}
+  .hero-item:last-child{border-bottom:none;}
+  .hero-item img{width:64px; height:50px; object-fit:cover; flex:0 0 auto; background:var(--line);}
+  .hero-item .ph-empty{width:64px; height:50px; flex:0 0 auto; background:var(--line);}
+  .hero-item .t{font-family:var(--font-display); font-size:16px; line-height:1.2;}
+  .hero-item .m{font-size:12.5px; color:var(--ink-soft); margin-top:2px;}
+  .hero-item .p{font-weight:600; color:var(--brick); font-size:13.5px;}
+
+  h2.section-title{font-family:var(--font-display); font-weight:500; font-size:clamp(24px,3.5vw,32px); margin:0 0 8px;}
+  p.section-sub{color:var(--ink-soft); margin:0 0 28px; max-width:600px;}
+  .pairs{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:8px;}
+  @media (max-width:700px){ .pairs{grid-template-columns:1fr;} }
+  .pair{border:1px solid var(--line); background:var(--bg-raised); padding:22px;}
+  .pair h3{font-family:var(--font-display); font-weight:500; font-size:20px; margin:0 0 6px;}
+  .pair .who{font-size:14px; margin-bottom:8px;}
+  .pair .who b.l{color:var(--brick);} .pair .who b.s{color:var(--slate);}
+  .pair p{margin:0; font-size:14px; color:var(--ink-soft);}
+  .how{display:grid; grid-template-columns:repeat(3,1fr); border:1px solid var(--line);}
+  @media (max-width:760px){ .how{grid-template-columns:1fr;} }
+  .how-step{padding:24px; border-right:1px solid var(--line);}
+  .how-step:last-child{border-right:none;}
+  @media (max-width:760px){ .how-step{border-right:none; border-bottom:1px solid var(--line);} .how-step:last-child{border-bottom:none;} }
+  .how-step .n{font-family:var(--font-display); font-size:28px; color:var(--brick); margin-bottom:8px;}
+  .how-step h3{font-family:var(--font-display); font-weight:500; font-size:18px; margin:0 0 6px;}
+  .how-step p{color:var(--ink-soft); font-size:14.5px; margin:0;}
+  .pricing{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:700px){ .pricing{grid-template-columns:1fr;} }
+  .price-card{border:1px solid var(--line); padding:24px; background:var(--bg-raised);}
+  .price-card.brick{border-top:3px solid var(--brick);} .price-card.slate{border-top:3px solid var(--slate);}
+  .price-card h3{font-family:var(--font-display); font-size:20px; font-weight:500; margin:0;}
+  .price-card .amt{font-family:var(--font-display); font-size:34px; margin:8px 0 2px;}
+  .price-card .amt span{font-family:var(--font-body); font-size:14px; color:var(--ink-soft);}
+  .price-card ul{list-style:none; padding:0; margin:14px 0 20px; font-size:14.5px; color:var(--ink-soft);}
+  .price-card li{padding:6px 0; border-top:1px dashed var(--line);} .price-card li:first-child{border-top:none;}
+  footer{border-top:1px solid var(--line); padding:28px 0; color:var(--ink-soft); font-size:13px;}
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+
+  .auth-wrap{max-width:560px; margin:28px auto 80px; padding:0 20px;}
+  .rolegrid{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px;}
+  .rolebtn{padding:12px; border:1px solid var(--line); background:var(--bg-raised); color:var(--ink); text-align:left; font-size:14.5px; font-weight:600; border-radius:2px;}
+  .rolebtn small{display:block; font-weight:400; color:var(--ink-soft); font-size:12px; margin-top:2px;}
+  .rolebtn.active.lister{background:var(--brick); border-color:var(--brick); color:#fff;}
+  .rolebtn.active.seeker{background:var(--slate); border-color:var(--slate); color:#fff;}
+  .rolebtn.active small{color:rgba(255,255,255,.85);}
+  .card{background:var(--bg-raised); border:1px solid var(--line); padding:24px;}
+  .auth-head h2{font-family:var(--font-display); font-weight:500; font-size:25px; margin:0 0 4px;}
+  .auth-head p{color:var(--ink-soft); font-size:14px; margin:0 0 18px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:12.5px; font-weight:600; margin-bottom:5px; color:var(--ink-soft);}
+  .field input, .field select, .field textarea{width:100%; padding:10px 12px; border:1px solid var(--line); background:var(--bg); color:var(--ink); font-family:var(--font-body); font-size:16px; border-radius:2px;}
+  .field textarea{resize:vertical; min-height:70px;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  @media (max-width:480px){ .row2.stack{grid-template-columns:1fr;} }
+  .form-toggle{text-align:center; margin-top:16px; font-size:13.5px; color:var(--ink-soft);}
+  .form-toggle button{background:none; border:none; text-decoration:underline; color:var(--ink); font-size:13.5px; padding:0;}
+  .err{color:var(--danger); font-size:13px; margin-top:10px;}
+  .hint{font-size:12px; color:var(--ink-soft); margin-top:4px;}
+
+  .dash-wrap{max-width:1080px; margin:0 auto; padding:26px 20px 80px;}
+  .dash-head{display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:20px;}
+  .who-line-top{font-size:14px; color:var(--ink-soft);}
+  .who-line-top strong{color:var(--ink);}
+  .tag{display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:2px; margin-left:6px;}
+  .tag.lister{background:var(--brick-wash); color:var(--brick);}
+  .tag.seeker{background:var(--slate-wash); color:var(--slate);}
+  .tag.sub-yes{background:var(--slate-wash); color:var(--success);}
+  .tag.sub-no{background:var(--brick-wash); color:var(--danger);}
+  .sub-banner{border:1px solid var(--line); background:var(--bg-panel); padding:16px 20px; display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:24px;}
+  .sub-banner.on{border-color:var(--success); background:var(--slate-wash);}
+  .sub-banner p{margin:0; font-size:14.5px;}
+  .sub-banner strong{display:block; font-family:var(--font-display); font-size:17px; margin-bottom:2px; font-weight:500;}
+  .dash-cols{display:grid; grid-template-columns:1fr 340px; gap:24px; align-items:start;}
+  @media (max-width:860px){ .dash-cols{grid-template-columns:1fr;} .dash-side{order:-1;} }
+  h3.col-title{font-family:var(--font-display); font-weight:500; font-size:19px; margin:0 0 12px;}
+
+  .listing-block{border:1px solid var(--line); background:var(--bg-raised); padding:20px; margin-bottom:14px; overflow:hidden;}
+  .cover{width:calc(100% + 40px); margin:-20px -20px 14px; aspect-ratio:16/10; object-fit:cover; display:block; cursor:zoom-in; background:var(--bg-panel);}
+  .thumbs{display:flex; gap:6px; margin:0 0 12px; overflow-x:auto;}
+  .thumbs img{width:62px; height:46px; object-fit:cover; cursor:zoom-in; border:1px solid var(--line); flex:0 0 auto;}
+  .lb-top{display:flex; justify-content:space-between; gap:12px; align-items:flex-start;}
+  .lb-title{font-family:var(--font-display); font-size:18px; font-weight:500; margin:0 0 4px;}
+  .lb-meta{font-size:13px; color:var(--ink-soft); margin:0 0 10px;}
+  .lb-desc{font-size:14px; margin:0 0 14px; white-space:pre-line;}
+  .lb-price{font-weight:600; color:var(--brick); white-space:nowrap; font-size:15px;}
+  .lb-foot{display:flex; justify-content:space-between; align-items:center; gap:10px; border-top:1px dashed var(--line); padding-top:12px;}
+  .lock-note{font-size:12.5px; color:var(--ink-soft);}
+  .kind{font-size:11px; font-weight:600; letter-spacing:.4px; color:var(--slate);}
+
+  .side-box{border:1px solid var(--line); background:var(--bg-raised); padding:18px; margin-bottom:16px;}
+  .side-box h4{font-family:var(--font-display); font-weight:500; font-size:16px; margin:0 0 10px;}
+  .my-item{padding-bottom:14px; margin-bottom:14px; border-bottom:1px dashed var(--line);}
+  .photo-mgr{display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin:8px 0;}
+  .photo-mgr .ph{position:relative;}
+  .photo-mgr img{width:100%; aspect-ratio:1; object-fit:cover; display:block; cursor:zoom-in;}
+  .photo-mgr .x{position:absolute; top:3px; right:3px; width:24px; height:24px; border:none; background:rgba(0,0,0,.65); color:#fff; font-size:16px; line-height:1; border-radius:50%; padding:0;}
+  .note{font-size:12px; color:var(--ink-soft); margin-top:6px;}
+  .thread{max-height:240px; overflow-y:auto; margin-bottom:10px;}
+  .msg{padding:8px 10px; margin-bottom:8px; font-size:14px; background:var(--bg-panel); border-radius:2px;}
+  .msg.mine{background:var(--slate-wash);}
+  .msg .wl{font-size:11px; color:var(--ink-soft); margin-bottom:2px;}
+  .empty{color:var(--ink-soft); font-size:13.5px; padding:18px 0; text-align:center;}
+
+  .modal-backdrop{position:fixed; inset:0; background:rgba(20,20,18,.5); display:none; align-items:center; justify-content:center; z-index:100; padding:20px;}
+  .modal-backdrop.show{display:flex;}
+  .modal{background:var(--bg-raised); border:1px solid var(--line); max-width:420px; width:100%; padding:24px;}
+  .modal h3{font-family:var(--font-display); font-weight:500; font-size:20px; margin:0 0 8px;}
+  .modal p{font-size:14px; color:var(--ink-soft); margin:0 0 16px;}
+  .lightbox{position:fixed; inset:0; background:rgba(10,10,10,.93); display:none; align-items:center; justify-content:center; z-index:200; flex-direction:column; gap:12px; padding:16px;}
+  .lightbox.show{display:flex;}
+  .lightbox img{max-width:96vw; max-height:78vh; object-fit:contain;}
+  .lx-bar{display:flex; gap:10px; align-items:center; color:#fff; font-size:13px;}
+  .lx-bar button{background:rgba(255,255,255,.15); color:#fff; border:none; padding:10px 16px; font-size:16px; border-radius:2px;}
+
+  [data-view]{display:none;} [data-view].active{display:block;}
+  .banner-msg{max-width:1080px; margin:0 auto; padding:12px 20px; font-size:13.5px;}
+  .banner-msg.err{background:var(--brick-wash); color:var(--danger);}
+  .banner-msg.ok{background:var(--slate-wash); color:var(--success);}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="nav">
+    <div class="brand" onclick="showView('home')">PropertyConnect</div>
+    <div class="nav-actions" id="navActions"></div>
+  </div>
+</header>
+<div id="topBanner"></div>
+
+<main>
+  <!-- ========== HOME ========== -->
+  <div data-view="home" class="active">
+    <div class="wrap">
+      <section class="hero">
+        <div>
+          <h1>Buy, sell and rent property — talk to the right person.</h1>
+          <p class="lede">Sellers meet buyers. Agents meet tenants. Browsing is free, and chat only opens once both sides have subscribed — so every conversation is serious.</p>
+          <div class="hero-ctas">
+            <button class="btn btn-brick" onclick="goAuth('seller')">I have a property</button>
+            <button class="btn btn-slate" onclick="goAuth('buyer')">I'm looking for one</button>
+          </div>
+        </div>
+        <div class="hero-panel">
+          <div class="cap">LATEST PROPERTIES</div>
+          <div id="heroListings"><div class="empty">Loading…</div></div>
+        </div>
+      </section>
+
+      <section class="hairline">
+        <h2 class="section-title">Who talks to who</h2>
+        <p class="section-sub">Two separate markets, so you only hear from people who fit what you're doing.</p>
+        <div class="pairs">
+          <div class="pair">
+            <h3>Buying &amp; selling</h3>
+            <div class="who"><b class="l">Sellers</b> ↔ <b class="s">Buyers</b></div>
+            <p>Owners list a property for sale with photos. Buyers post what they want and their budget.</p>
+          </div>
+          <div class="pair">
+            <h3>Renting</h3>
+            <div class="who"><b class="l">Agents</b> ↔ <b class="s">Tenants</b></div>
+            <p>Agents list houses and flats to rent with photos. Tenants post the area, budget and move-in plans.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="hairline">
+        <h2 class="section-title">How the contact rule works</h2>
+        <p class="section-sub">A message only goes through when both people are paying members. It keeps listings serious and inboxes short.</p>
+        <div class="how">
+          <div class="how-step"><div class="n">1</div><h3>Sign up &amp; post</h3><p>Choose your account type. Add your property with photos, or tell us what you're looking for.</p></div>
+          <div class="how-step"><div class="n">2</div><h3>Subscribe</h3><p>Browsing is always free. Chat needs an active monthly subscription — on both ends.</p></div>
+          <div class="how-step"><div class="n">3</div><h3>Chat when it's mutual</h3><p>Once you and the other person are both subscribed, the Message button unlocks.</p></div>
+        </div>
+      </section>
+
+      <section class="hairline">
+        <h2 class="section-title">Subscriptions</h2>
+        <p class="section-sub">One flat monthly plan per side. No commission on top.</p>
+        <div class="pricing">
+          <div class="price-card brick">
+            <h3>Sellers &amp; agents</h3>
+            <div class="amt"><b id="priceLister">₦5,000</b><span> / month</span></div>
+            <ul><li>List properties with photos</li><li>Chat with subscribed buyers or tenants</li><li>Get messages from them too</li></ul>
+            <button class="btn btn-brick btn-full" onclick="goAuth('seller')">Start listing</button>
+          </div>
+          <div class="price-card slate">
+            <h3>Buyers &amp; tenants</h3>
+            <div class="amt"><b id="priceSeeker">₦3,000</b><span> / month</span></div>
+            <ul><li>Browse every listing with photos</li><li>Chat with subscribed sellers or agents</li><li>Post your search so they find you</li></ul>
+            <button class="btn btn-slate btn-full" onclick="goAuth('buyer')">Start searching</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ========== SIGN UP / LOG IN ========== -->
+  <div data-view="auth">
+    <div class="auth-wrap">
+      <div class="rolegrid" id="roleGrid"></div>
+      <div class="card">
+        <div class="auth-head"><h2 id="authTitle"></h2><p id="authSub"></p></div>
+        <div id="authForm"></div>
+        <div class="form-toggle"><span id="toggleLabel"></span> <button onclick="toggleAuthMode()" id="toggleBtn"></button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== DASHBOARD ========== -->
+  <div data-view="dashboard">
+    <div class="dash-wrap">
+      <div class="dash-head">
+        <div class="who-line-top">Signed in as <strong id="whoName"></strong><span class="tag" id="whoRoleTag"></span><span class="tag" id="whoSubTag"></span></div>
+        <button class="btn btn-ghost btn-sm" onclick="logout()">Log out</button>
+      </div>
+      <div id="subBanner"></div>
+      <div class="dash-cols">
+        <div>
+          <h3 class="col-title" id="listColTitle"></h3>
+          <div id="listingsCol"><div class="empty">Loading…</div></div>
+        </div>
+        <div class="dash-side">
+          <div class="side-box"><h4 id="myBoxTitle"></h4><div id="myBox"></div></div>
+          <div class="side-box" id="threadBoxWrap" style="display:none;">
+            <h4 id="threadTitle">Chat</h4>
+            <div class="thread" id="threadMsgs"></div>
+            <div class="field" style="margin-bottom:8px;"><textarea id="msgInput" placeholder="Write a message…" rows="2"></textarea></div>
+            <button class="btn btn-solid btn-sm" onclick="sendMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer><div class="wrap"><span>© 2026 PropertyConnect · propertyconnect.com.ng</span><span>Payments by Paystack / Flutterwave</span></div></footer>
+
+<div class="modal-backdrop" id="subModal">
+  <div class="modal">
+    <h3>Subscribe to unlock chat</h3>
+    <p id="subModalText"></p>
+    <div class="row2"><button class="btn btn-ghost" onclick="closeSubModal()">Not now</button><button class="btn btn-solid" onclick="confirmSubscribe()">Continue to payment</button></div>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox" onclick="if(event.target===this)lxClose()">
+  <img id="lxImg" alt="Property photo">
+  <div class="lx-bar"><button onclick="lxMove(-1)">‹ Prev</button><span id="lxCount"></span><button onclick="lxMove(1)">Next ›</button><button onclick="lxClose()">Close</button></div>
+</div>
+
+<!--MOCK-->
+<script>
+const API = '/api';
+const ROLES = {
+  seller: { side:'lister', partner:'buyer',  label:'Seller', pick:"I'm selling",        sub:'List a property for sale', priceHint:'e.g. ₦85,000,000' },
+  buyer:  { side:'seeker', partner:'seller', label:'Buyer',  pick:"I'm buying",         sub:'Find a property to buy' },
+  agent:  { side:'lister', partner:'tenant', label:'Agent',  pick:"I'm an agent",       sub:'List houses to rent',      priceHint:'e.g. ₦1,500,000 / year' },
+  tenant: { side:'seeker', partner:'agent',  label:'Tenant', pick:"I'm looking to rent", sub:'Find a place to rent' },
+};
+const TYPES = ['Duplex','Bungalow','Flat / apartment','Terraced house','Self-contain / room','Land','Commercial','Other'];
+
+const store = {
+  get(k){ try { return localStorage.getItem(k); } catch { return null; } },
+  set(k,v){ try { localStorage.setItem(k,v); } catch {} },
+  del(k){ try { localStorage.removeItem(k); } catch {} },
+};
+let token = store.get('pc_token') || null;
+let me = null, authRole = 'seller', authMode = 'signup';
+let prices = { lister: 5000, seeker: 3000 };
+let market = [], myListings = [], myRequest = null;
+let galleries = {};             // listing id -> photo urls (for the photo viewer)
+let activeThread = null;        // { id, name }
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const naira = (n) => '₦' + Number(n).toLocaleString('en-NG');
+const val = (id) => { const el = $(id); return el ? el.value.trim() : ''; };
+const typeOptions = () => TYPES.map(t => `<option>${esc(t)}</option>`).join('');
+const priceFor = (role) => ROLES[role].side === 'lister' ? prices.lister : prices.seeker;
+
+function banner(msg, kind) { $('topBanner').innerHTML = msg ? `<div class="banner-msg ${kind || 'ok'}">${esc(msg)}</div>` : ''; }
+function showView(name) {
+  document.querySelectorAll('[data-view]').forEach(el => el.classList.remove('active'));
+  document.querySelector(`[data-view="${name}"]`).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+async function api(path, { method = 'GET', body } = {}) {
+  if (window.MOCK_API) return window.MOCK_API(path, { method, body }, token);
+  const isForm = body instanceof FormData;
+  const res = await fetch(API + path, {
+    method,
+    headers: { ...(isForm ? {} : { 'Content-Type': 'application/json' }), ...(token ? { Authorization: 'Bearer ' + token } : {}) },
+    body: body ? (isForm ? body : JSON.stringify(body)) : undefined,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Something went wrong');
+  return data;
+}
+
+/* ---------- photos: shrink on the phone first, then upload ---------- */
+async function prepImage(file) {
+  if (!file.type.startsWith('image/')) throw new Error('Please choose photos only (JPG or PNG)');
+  const bmp = await createImageBitmap(file).catch(() => null);
+  if (!bmp) return file;
+  const max = window.MOCK_API ? 900 : 1400;
+  const scale = Math.min(1, max / Math.max(bmp.width, bmp.height));
+  const c = document.createElement('canvas');
+  c.width = Math.round(bmp.width * scale); c.height = Math.round(bmp.height * scale);
+  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', window.MOCK_API ? 0.7 : 0.82));
+  return new File([blob], (file.name || 'photo').replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' });
+}
+async function uploadPhotos(listingId, files, onStatus) {
+  const list = [...files].slice(0, 8);
+  if (!list.length) return;
+  const fd = new FormData();
+  for (let i = 0; i < list.length; i++) {
+    onStatus && onStatus(`Preparing photo ${i + 1} of ${list.length}…`);
+    fd.append('photos', await prepImage(list[i]));
+  }
+  onStatus && onStatus('Uploading…');
+  await api(`/listings/${listingId}/images`, { method: 'POST', body: fd });
+}
+
+/* ---------- photo viewer ---------- */
+let lx = { list: [], i: 0 };
+function openPhoto(id, i) { lx = { list: galleries[id] || [], i }; if (lx.list.length) showLx(); }
+function showLx() { $('lxImg').src = lx.list[lx.i]; $('lxCount').textContent = `${lx.i + 1} / ${lx.list.length}`; $('lightbox').classList.add('show'); }
+function lxMove(d) { lx.i = (lx.i + d + lx.list.length) % lx.list.length; showLx(); }
+function lxClose() { $('lightbox').classList.remove('show'); }
+document.addEventListener('keydown', e => {
+  if (!$('lightbox').classList.contains('show')) return;
+  if (e.key === 'Escape') lxClose(); if (e.key === 'ArrowLeft') lxMove(-1); if (e.key === 'ArrowRight') lxMove(1);
+});
+
+/* ---------- nav + home ---------- */
+function renderNav() {
+  $('navActions').innerHTML = me
+    ? `<button class="btn btn-sm btn-ghost" onclick="showView('home')">Home</button><button class="btn btn-sm btn-solid" onclick="goDashboard()">Dashboard</button>`
+    : `<button class="btn btn-sm btn-ghost" onclick="authMode='login'; goAuth(authRole, true)">Log in</button><button class="btn btn-sm btn-brick" onclick="goAuth('seller')">Sign up</button>`;
+}
+function renderPrices() { $('priceLister').textContent = naira(prices.lister); $('priceSeeker').textContent = naira(prices.seeker); }
+async function loadConfig() {
+  try { const c = await api('/config'); prices = { lister: c.listerPrice, seeker: c.seekerPrice }; } catch {}
+  renderPrices();
+}
+async function renderHero() {
+  try {
+    const { listings } = await api('/listings/preview');
+    $('heroListings').innerHTML = listings.slice(0, 4).map(l => `
+      <div class="hero-item">
+        ${l.images && l.images[0] ? `<img src="${esc(l.images[0])}" alt="">` : `<div class="ph-empty"></div>`}
+        <div><div class="t">${esc(l.title)}</div>
+        <div class="m">${esc(l.location)} · ${l.owner_role === 'agent' ? 'For rent' : 'For sale'}</div>
+        <div class="p">${esc(l.price)}</div></div>
+      </div>`).join('') || `<div class="empty">No properties yet — be the first to list one.</div>`;
+  } catch { $('heroListings').innerHTML = `<div class="empty">Could not load properties right now.</div>`; }
+}
+
+/* ---------- sign up / log in ---------- */
+function goAuth(role, keepMode) { authRole = role; if (!keepMode) authMode = 'signup'; renderRoleGrid(); renderAuthForm(); showView('auth'); }
+function setAuthRole(role) { authRole = role; renderRoleGrid(); renderAuthForm(); }
+function toggleAuthMode() { authMode = authMode === 'signup' ? 'login' : 'signup'; renderAuthForm(); }
+function renderRoleGrid() {
+  $('roleGrid').style.display = authMode === 'login' ? 'none' : 'grid';
+  $('roleGrid').innerHTML = ['seller', 'buyer', 'agent', 'tenant'].map(r =>
+    `<button class="rolebtn ${ROLES[r].side} ${r === authRole ? 'active' : ''}" onclick="setAuthRole('${r}')">${ROLES[r].pick}<small>${ROLES[r].sub}</small></button>`).join('');
+}
+function renderAuthForm() {
+  renderRoleGrid();
+  const form = $('authForm'), R = ROLES[authRole];
+  if (authMode === 'login') {
+    $('authTitle').textContent = 'Log in'; $('authSub').textContent = 'Welcome back.';
+    $('toggleLabel').textContent = 'New here?'; $('toggleBtn').textContent = 'Create an account';
+    form.innerHTML = `
+      <div class="field"><label>Email</label><input id="f_email" type="email" autocomplete="email"></div>
+      <div class="field"><label>Password</label><input id="f_password" type="password" autocomplete="current-password"></div>
+      <button class="btn btn-solid btn-full" id="loginBtn" onclick="handleLogin()">Log in</button><div class="err" id="authErr"></div>`;
+    return;
+  }
+  $('authTitle').textContent = R.sub;
+  $('authSub').textContent = R.side === 'lister' ? 'Create your account and add your first property with photos.' : 'Create your account and tell people what you are looking for.';
+  $('toggleLabel').textContent = 'Already have an account?'; $('toggleBtn').textContent = 'Log in';
+  const roleFields = R.side === 'lister' ? `
+    <div class="field"><label>Property title</label><input id="f_title" placeholder="e.g. 3-bedroom duplex, Lekki Phase 1"></div>
+    <div class="row2 stack">
+      <div class="field"><label>Location</label><input id="f_location" placeholder="e.g. Lekki, Lagos"></div>
+      <div class="field"><label>Price</label><input id="f_price" placeholder="${esc(R.priceHint)}"></div>
+    </div>
+    <div class="field"><label>Property type</label><select id="f_type">${typeOptions()}</select></div>
+    <div class="field"><label>Description</label><textarea id="f_description" placeholder="Bedrooms, power, water, security, anything buyers should know"></textarea></div>
+    <div class="field"><label>Photos (optional, up to 8)</label><input id="f_photos" type="file" accept="image/*" multiple><div class="hint">You can also add or change photos later from your dashboard.</div></div>` : `
+    <div class="row2 stack">
+      <div class="field"><label>Preferred area(s)</label><input id="f_location" placeholder="e.g. Ikeja or Magodo"></div>
+      <div class="field"><label>Budget</label><input id="f_budget" placeholder="${authRole === 'tenant' ? 'e.g. ₦1m – ₦2m / year' : 'e.g. ₦40m – ₦60m'}"></div>
+    </div>
+    <div class="field"><label>Property type</label><select id="f_type">${typeOptions()}</select></div>
+    <div class="field"><label>Notes</label><textarea id="f_notes" placeholder="${authRole === 'tenant' ? 'When you want to move in, bedrooms, family size…' : 'Timeline, must-haves, how you will pay…'}"></textarea></div>`;
+  form.innerHTML = `
+    <div class="row2 stack"><div class="field"><label>Full name</label><input id="f_name" autocomplete="name"></div><div class="field"><label>Phone</label><input id="f_phone" type="tel" autocomplete="tel"></div></div>
+    <div class="row2 stack"><div class="field"><label>Email</label><input id="f_email" type="email" autocomplete="email"></div><div class="field"><label>Password (8+ characters)</label><input id="f_password" type="password" autocomplete="new-password"></div></div>
+    <div class="hairline" style="margin:16px 0;"></div>
+    ${roleFields}
+    <button class="btn ${R.side === 'lister' ? 'btn-brick' : 'btn-slate'} btn-full" id="signupBtn" onclick="handleSignup()">Create account</button>
+    <div class="err" id="authErr"></div>`;
+}
+async function handleSignup() {
+  const err = $('authErr'), btn = $('signupBtn'); err.textContent = '';
+  const R = ROLES[authRole];
+  const body = { role: authRole, name: val('f_name'), phone: val('f_phone'), email: val('f_email'), password: $('f_password').value };
+  if (!body.name || !body.email || !body.password) { err.textContent = 'Please fill in your name, email and password.'; return; }
+  if (R.side === 'lister') body.listing = { title: val('f_title'), location: val('f_location'), price: val('f_price'), type: val('f_type'), description: val('f_description') };
+  else body.request = { location: val('f_location'), budget: val('f_budget'), type: val('f_type'), notes: val('f_notes') };
+  btn.disabled = true; btn.textContent = 'Creating account…';
+  try {
+    const data = await api('/auth/signup', { method: 'POST', body });
+    token = data.token; me = data.user; store.set('pc_token', token);
+    let note = null;
+    const files = $('f_photos') && $('f_photos').files;
+    if (files && files.length && data.listingId) {
+      try { await uploadPhotos(data.listingId, files, s => btn.textContent = s); }
+      catch (e) { note = 'Your account is ready, but the photos did not upload: ' + e.message + ' You can add them from your dashboard.'; }
+    }
+    await goDashboard();
+    if (note) banner(note, 'err');
+  } catch (e) { err.textContent = e.message; btn.disabled = false; btn.textContent = 'Create account'; }
+}
+async function handleLogin() {
+  const err = $('authErr'); err.textContent = '';
+  try {
+    const data = await api('/auth/login', { method: 'POST', body: { email: val('f_email'), password: $('f_password').value } });
+    token = data.token; me = data.user; store.set('pc_token', token);
+    goDashboard();
+  } catch (e) { err.textContent = e.message; }
+}
+function logout() { token = null; me = null; activeThread = null; store.del('pc_token'); banner(''); renderNav(); showView('home'); }
+
+/* ---------- dashboard ---------- */
+async function goDashboard() {
+  if (!token) { showView('home'); return; }
+  if (!me) { try { me = (await api('/auth/me')).user; } catch { logout(); return; } }
+  renderNav();
+  const R = ROLES[me.role];
+  $('whoName').textContent = me.name;
+  $('whoRoleTag').textContent = R.label; $('whoRoleTag').className = 'tag ' + R.side;
+  $('whoSubTag').textContent = me.subscribed ? 'Subscribed' : 'Not subscribed'; $('whoSubTag').className = 'tag ' + (me.subscribed ? 'sub-yes' : 'sub-no');
+  renderSubBanner();
+  showView('dashboard');
+  await loadDashboardData();
+}
+function renderSubBanner() {
+  const p = naira(priceFor(me.role)) + '/month';
+  const end = me.subscriptionEndsAt ? new Date(me.subscriptionEndsAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+  $('subBanner').innerHTML = me.subscribed
+    ? `<div class="sub-banner on"><p><strong>You're subscribed</strong>Chat is open with anyone else who is subscribed.${end ? ' Active until ' + esc(end) + '.' : ''}</p></div>`
+    : `<div class="sub-banner"><p><strong>You're not subscribed yet</strong>You can browse for free. Chat unlocks when you subscribe — ${p}.</p>
+       <button class="btn ${ROLES[me.role].side === 'lister' ? 'btn-brick' : 'btn-slate'} btn-sm" onclick="openSubModal()">Subscribe — ${p}</button></div>`;
+}
+async function loadDashboardData() {
+  const R = ROLES[me.role];
+  $('listColTitle').textContent = { seller: 'Buyers looking right now', agent: 'Tenants looking right now', buyer: 'Properties for sale', tenant: 'Properties to rent' }[me.role];
+  $('myBoxTitle').textContent = R.side === 'lister' ? 'Your properties' : 'Your search';
+  try {
+    if (R.side === 'lister') {
+      const [a, b] = await Promise.all([api('/requests'), api('/my-listings')]);
+      market = a.requests; myListings = b.listings; renderMyListings();
+    } else {
+      const [a, b] = await Promise.all([api('/listings'), api('/my-request')]);
+      market = a.listings; myRequest = b.request; renderMyRequest();
+    }
+    renderMarket();
+  } catch (e) { $('listingsCol').innerHTML = `<div class="empty">Could not load: ${esc(e.message)}</div>`; }
+}
+function renderMarket() {
+  const R = ROLES[me.role], col = $('listingsCol');
+  if (!market.length) { col.innerHTML = `<div class="empty">Nobody here yet — check back soon.</div>`; return; }
+  col.innerHTML = market.map(o => {
+    const open = me.subscribed && o.owner_subscribed;
+    const note = open ? '🔓 Chat open' : (!me.subscribed ? '🔒 Subscribe to chat' : '🔒 Waiting for their subscription');
+    const btn = open ? `<button class="btn btn-sm btn-solid" onclick="openThread('${o.owner_id}')">Message</button>`
+                     : `<button class="btn btn-sm btn-ghost" disabled>Message</button>`;
+    if (R.side === 'seeker') {
+      const imgs = o.images || []; galleries[o.id] = imgs;
+      return `<div class="listing-block">
+        ${imgs.length ? `<img class="cover" src="${esc(imgs[0])}" alt="" loading="lazy" onclick="openPhoto('${o.id}',0)">` : ''}
+        ${imgs.length > 1 ? `<div class="thumbs">${imgs.map((u, i) => `<img src="${esc(u)}" alt="" loading="lazy" onclick="openPhoto('${o.id}',${i})">`).join('')}</div>` : ''}
+        <div class="lb-top"><div><div class="kind">${o.owner_role === 'agent' ? 'FOR RENT' : 'FOR SALE'}</div><div class="lb-title">${esc(o.title)}</div>
+        <div class="lb-meta">${esc(o.location)} · ${esc(o.type || '')} · by ${esc(o.owner_name)}</div></div><div class="lb-price">${esc(o.price)}</div></div>
+        <p class="lb-desc">${esc(o.description || '')}</p><div class="lb-foot"><span class="lock-note">${note}</span>${btn}</div></div>`;
+    }
+    return `<div class="listing-block">
+      <div class="lb-top"><div><div class="lb-title">Looking in ${esc(o.location)}</div><div class="lb-meta">${esc(o.type || '')} · ${esc(o.owner_name)}</div></div><div class="lb-price">${esc(o.budget)}</div></div>
+      <p class="lb-desc">${esc(o.notes || '')}</p><div class="lb-foot"><span class="lock-note">${note}</span>${btn}</div></div>`;
+  }).join('');
+}
+function renderMyRequest() {
+  const r = myRequest;
+  $('myBox').innerHTML = r ? `<div class="lb-title" style="font-size:16px;">Looking in ${esc(r.location)}</div>
+    <div class="lb-meta">${esc(r.type || '')} · Budget ${esc(r.budget)}</div><div class="lb-desc" style="font-size:13px;">${esc(r.notes || '')}</div>
+    <div class="note">Sellers and agents can see this.</div>` : `<div class="empty">No search saved.</div>`;
+}
+function renderMyListings() {
+  const items = myListings.map(l => {
+    galleries[l.id] = l.images || [];
+    return `<div class="my-item">
+      <div class="lb-title" style="font-size:16px;">${esc(l.title)}</div>
+      <div class="lb-meta" style="margin-bottom:4px;">${esc(l.location)} · ${esc(l.price)}</div>
+      <div class="photo-mgr">${(l.images || []).map((u, i) => `<div class="ph"><img src="${esc(u)}" alt="" onclick="openPhoto('${l.id}',${i})"><button class="x" title="Remove photo" onclick="removePhoto('${l.id}',${i})">×</button></div>`).join('')}</div>
+      <label class="btn btn-sm btn-ghost">＋ Add photos<input type="file" accept="image/*" multiple hidden onchange="addPhotos('${l.id}',this)"></label>
+      <div class="note" id="up_${l.id}">${(l.images || []).length ? (l.images.length + ' photo' + (l.images.length > 1 ? 's' : '')) : 'No photos yet — listings with photos get more messages.'}</div></div>`;
+  }).join('');
+  $('myBox').innerHTML = items + `<button class="btn btn-sm btn-ghost btn-full" onclick="$('addForm').hidden=!$('addForm').hidden">＋ Add another property</button>
+    <div id="addForm" hidden style="margin-top:14px;">
+      <div class="field"><label>Title</label><input id="n_title"></div>
+      <div class="row2 stack"><div class="field"><label>Location</label><input id="n_location"></div><div class="field"><label>Price</label><input id="n_price" placeholder="${esc(ROLES[me.role].priceHint)}"></div></div>
+      <div class="field"><label>Type</label><select id="n_type">${typeOptions()}</select></div>
+      <div class="field"><label>Description</label><textarea id="n_description"></textarea></div>
+      <div class="field"><label>Photos</label><input id="n_photos" type="file" accept="image/*" multiple></div>
+      <button class="btn btn-solid btn-sm btn-full" id="newBtn" onclick="submitNewListing()">Save property</button><div class="err" id="newErr"></div></div>`;
+}
+async function addPhotos(id, input) {
+  const st = $('up_' + id); if (!input.files.length) return;
+  try { await uploadPhotos(id, input.files, s => st.textContent = s); await loadDashboardData(); }
+  catch (e) { st.textContent = e.message; st.style.color = 'var(--danger)'; }
+  input.value = '';
+}
+async function removePhoto(id, i) {
+  const url = (galleries[id] || [])[i]; if (!url || !confirm('Remove this photo?')) return;
+  try { await api(`/listings/${id}/images?url=${encodeURIComponent(url)}`, { method: 'DELETE' }); await loadDashboardData(); }
+  catch (e) { alert(e.message); }
+}
+async function submitNewListing() {
+  const err = $('newErr'), btn = $('newBtn'); err.textContent = '';
+  const body = { title: val('n_title'), location: val('n_location'), price: val('n_price'), type: val('n_type'), description: val('n_description') };
+  if (!body.title || !body.location || !body.price) { err.textContent = 'Title, location and price are needed.'; return; }
+  btn.disabled = true;
+  try {
+    const { id } = await api('/listings', { method: 'POST', body });
+    const files = $('n_photos').files;
+    if (files.length) await uploadPhotos(id, files, s => btn.textContent = s);
+    await loadDashboardData();
+  } catch (e) { err.textContent = e.message; btn.disabled = false; btn.textContent = 'Save property'; }
+}
+
+/* ---------- subscribe ---------- */
+function openSubModal() {
+  $('subModalText').textContent = `You'll go to a secure checkout to pay ${naira(priceFor(me.role))} for 30 days. When it confirms, chat unlocks on your account.`;
+  $('subModal').classList.add('show');
+}
+function closeSubModal() { $('subModal').classList.remove('show'); }
+async function confirmSubscribe() {
+  try {
+    const r = await api('/subscribe/initialize', { method: 'POST' });
+    if (r.checkoutUrl) { location.href = r.checkoutUrl; return; }
+    if (r.demo) { me = (await api('/auth/me')).user; closeSubModal(); await goDashboard(); banner('Demo mode: subscription switched on instantly. On the real site this is a Paystack/Flutterwave payment.', 'ok'); }
+  } catch (e) { closeSubModal(); alert(e.message); }
+}
+async function handlePaymentCallback() {
+  const p = new URLSearchParams(location.search);
+  const ref = p.get('reference') || p.get('tx_ref'); if (!ref) return;
+  const status = p.get('status'), txid = p.get('transaction_id');
+  history.replaceState({}, '', '/');
+  if (!token) return;
+  if (status === 'cancelled') { banner('Payment was cancelled — you have not been charged.', 'err'); return; }
+  try {
+    const r = await api(`/subscribe/verify/${encodeURIComponent(ref)}${txid ? '?transaction_id=' + encodeURIComponent(txid) : ''}`);
+    banner(r.success ? 'Payment confirmed — chat is now unlocked.' : "We haven't received confirmation yet. If you were charged, refresh in a minute.", r.success ? 'ok' : 'err');
+    me = null;
+  } catch (e) { banner(e.message, 'err'); }
+}
+
+/* ---------- chat ---------- */
+async function openThread(id) {
+  const o = market.find(x => x.owner_id === id);
+  activeThread = { id, name: o ? o.owner_name : 'them' };
+  $('threadBoxWrap').style.display = 'block';
+  $('threadTitle').textContent = 'Chat with ' + activeThread.name;
+  await refreshThread();
+  $('threadBoxWrap').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+async function refreshThread(silent) {
+  if (!activeThread) return;
+  const el = $('threadMsgs');
+  try {
+    const { messages } = await api('/messages/' + activeThread.id);
+    el.innerHTML = messages.length ? messages.map(m => `<div class="msg ${m.from_id === me.id ? 'mine' : ''}"><div class="wl">${m.from_id === me.id ? 'You' : esc(activeThread.name)}</div>${esc(m.text)}</div>`).join('')
+      : `<div class="empty">No messages yet — say hello.</div>`;
+    el.scrollTop = el.scrollHeight;
+  } catch (e) { if (!silent) el.innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
+}
+async function sendMessage() {
+  const input = $('msgInput'), text = input.value.trim();
+  if (!text || !activeThread) return;
+  try { await api('/messages', { method: 'POST', body: { toId: activeThread.id, text } }); input.value = ''; await refreshThread(); }
+  catch (e) { alert(e.message); }
+}
+setInterval(() => { if (activeThread && document.visibilityState === 'visible') refreshThread(true); }, 8000);
+
+/* ---------- start ---------- */
+(async function init() {
+  renderNav(); renderAuthForm(); loadConfig(); renderHero();
+  await handlePaymentCallback();
+  if (token) await goDashboard();
+})();
+</script>
+</body>
+</html>
