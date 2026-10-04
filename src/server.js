@@ -6,7 +6,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import db from './db.js';
+import db, { transaction } from './db.js';
 import { hashPassword, checkPassword, signToken, requireAuth } from './auth.js';
 import { initializePaystack, verifyPaystack, verifyPaystackSignature } from './paystack.js';
 import { initializeFlutterwave, verifyFlutterwave, verifyFlutterwaveSignature } from './flutterwave.js';
@@ -165,7 +165,7 @@ app.post('/api/auth/signup', authLimiter, (req, res) => {
 
   const id = uid('u');
   const listingId = isLister ? uid('l') : null;
-  db.transaction(() => {
+  transaction(() => {
     db.prepare(`INSERT INTO users (id, role, name, email, password_hash, phone, subscribed, created_at)
                 VALUES (?,?,?,?,?,?,0,?)`).run(id, role, name, email, hashPassword(String(password)), phone || null, Date.now());
     if (isLister) {
@@ -178,7 +178,7 @@ app.post('/api/auth/signup', authLimiter, (req, res) => {
                   VALUES (?,?,?,?,?,?,?)`)
         .run(uid('b'), id, clip(seek.location, 120), clip(seek.budget, 60), clip(seek.type, 40), clip(seek.notes, 2000), Date.now());
     }
-  })();
+  });
 
   const user = getUser(id);
   res.json({ token: signToken(user), user: publicUser(user), listingId });

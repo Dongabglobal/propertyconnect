@@ -1,4 +1,6 @@
-import Database from 'better-sqlite3';
+// Uses Node's own built-in SQLite (needs Node 22+, no native C++ compiling —
+// that's what kept failing to build on Render with the old "better-sqlite3" package).
+import { DatabaseSync } from 'node:sqlite';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -7,9 +9,17 @@ const DB_PATH = process.env.DB_PATH || path.join(__dirname, '..', 'data.sqlite')
 
 // SQLite is fine to start with. When you grow, swap this file for Postgres —
 // server.js only talks to the database through `db.prepare(...)`.
-const db = new Database(DB_PATH);
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+const db = new DatabaseSync(DB_PATH);
+db.exec('PRAGMA journal_mode = WAL');
+db.exec('PRAGMA foreign_keys = ON');
+
+// better-sqlite3 had db.transaction(fn); node:sqlite doesn't, so this
+// does the same job: run fn's queries, and undo them all if any one fails.
+export function transaction(fn) {
+  db.exec('BEGIN');
+  try { const result = fn(); db.exec('COMMIT'); return result; }
+  catch (err) { db.exec('ROLLBACK'); throw err; }
+}
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS users (
