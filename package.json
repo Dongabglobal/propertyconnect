@@ -4,14 +4,13 @@
   "description": "PropertyConnect.com.ng — sellers/buyers and agents/tenants, photo uploads, subscription-gated chat (Paystack/Flutterwave)",
   "type": "module",
   "main": "src/server.js",
-  "engines": { "node": ">=18" },
+  "engines": { "node": ">=22.5.0" },
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "better-sqlite3": "^11.3.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-rate-limit": "^7.4.0",
